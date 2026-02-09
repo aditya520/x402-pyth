@@ -1,0 +1,23 @@
+node_modules/
+dist/
+logs/
+
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# Claude Code (local only)
+.claude/
+
+# Docs (not public yet)
+DEPLOYMENT.md
+
+# OS
+.DS_Store
+
+# Testing
+prompts-explicit/
+prompts/
+
+# Test artifacts

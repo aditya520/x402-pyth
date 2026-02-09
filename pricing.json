@@ -1,0 +1,25 @@
+{
+  "durations": [
+    { "path": "1h",  "label": "1 hour",   "basePriceDollars": 1 },
+    { "path": "4h",  "label": "4 hours",  "basePriceDollars": 15 },
+    { "path": "24h", "label": "24 hours", "basePriceDollars": 25 },
+    { "path": "7d",  "label": "7 days",   "basePriceDollars": 100 },
+    { "path": "30d", "label": "30 days",  "basePriceDollars": 300 }
+  ],
+  "assetTypes": {
+    "crypto":    { "label": "Crypto",    "multiplier": 1.0 },
+    "equity":    { "label": "Equity",    "multiplier": 1.5 },
+    "fx":        { "label": "FX",        "multiplier": 1.2 },
+    "rates":     { "label": "Rates",     "multiplier": 1.0 },
+    "commodity": { "label": "Commodity", "multiplier": 1.0 },
+    "kalshi":    { "label": "Kalshi",    "multiplier": 0.8 },
+    "nav":       { "label": "NAV",       "multiplier": 0.8 }
+  },
+  "channels": {
+    "real-time": { "label": "Real-time",        "wsChannel": "real_time",         "multiplier": 3.0 },
+    "1ms":       { "label": "1ms fixed rate",   "wsChannel": "fixed_rate@1ms",    "multiplier": 2.5 },
+    "50ms":      { "label": "50ms fixed rate",  "wsChannel": "fixed_rate@50ms",   "multiplier": 1.5 },
+    "200ms":     { "label": "200ms fixed rate", "wsChannel": "fixed_rate@200ms",  "multiplier": 1.0 },
+    "1000ms":    { "label": "1s fixed rate",    "wsChannel": "fixed_rate@1000ms", "multiplier": 0.7 }
+  }
+}
