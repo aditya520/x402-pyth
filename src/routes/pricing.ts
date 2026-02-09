@@ -30,7 +30,7 @@ pricingRouter.get("/", (req, res) => {
     return;
   }
 
-  const { ticker, assetType, channel } = parsed.data;
+  const { ticker: tickerParam, assetType, channel } = parsed.data;
   const assetTypes = getAssetTypes();
   const channels = getChannels();
   const durations = getDurations();
@@ -57,26 +57,41 @@ pricingRouter.get("/", (req, res) => {
     return;
   }
 
-  // Resolve which asset types to include
-  const filteredAssetTypes = assetType ? [assetType] : Object.keys(assetTypes);
+  // Parse comma-separated tickers
+  const tickers = tickerParam
+    ? tickerParam.split(",").map((t) => t.trim()).filter(Boolean)
+    : [];
 
-  // If ticker is provided, narrow to asset types that contain it
-  let effectiveAssetTypes = filteredAssetTypes;
-  if (ticker) {
-    effectiveAssetTypes = filteredAssetTypes.filter((at) => {
-      const tickers = getTickersForAssetType(at);
-      return ticker in tickers;
-    });
-    if (effectiveAssetTypes.length === 0) {
+  // Validate each ticker exists in at least one asset type
+  const invalidTickers: string[] = [];
+  if (tickers.length > 0) {
+    const allTickerData = getAllTickers();
+    for (const t of tickers) {
+      const found = Object.keys(assetTypes).some((at) => allTickerData[at]?.[t]);
+      if (!found) invalidTickers.push(t);
+    }
+    if (invalidTickers.length > 0) {
       res.status(400).json({
         error: {
           code: "INVALID_TICKER",
-          message: `Ticker '${ticker}' not found${assetType ? ` in asset type '${assetType}'` : ""}`,
+          message: `Ticker(s) not found: ${invalidTickers.join(", ")}`,
           hint: "Look up valid symbols and feed IDs at https://history.pyth-lazer.dourolabs.app/history/v1/symbols",
         },
       });
       return;
     }
+  }
+
+  // Resolve which asset types to include
+  const filteredAssetTypes = assetType ? [assetType] : Object.keys(assetTypes);
+
+  // If tickers are provided, narrow to asset types that contain at least one
+  let effectiveAssetTypes = filteredAssetTypes;
+  if (tickers.length > 0) {
+    effectiveAssetTypes = filteredAssetTypes.filter((at) => {
+      const atTickers = getTickersForAssetType(at);
+      return tickers.some((t) => t in atTickers);
+    });
   }
 
   const filteredChannels = channel ? [channel] : Object.keys(channels);
@@ -114,16 +129,18 @@ pricingRouter.get("/", (req, res) => {
   > = {};
   const allTickers = getAllTickers();
   for (const at of effectiveAssetTypes) {
-    const tickers = allTickers[at];
-    if (!tickers) continue;
-    if (ticker) {
-      // Only include the requested ticker
-      if (tickers[ticker]) {
-        supportedTickers[at] = { [ticker]: { feedId: tickers[ticker].feedId } };
+    const atTickers = allTickers[at];
+    if (!atTickers) continue;
+    if (tickers.length > 0) {
+      // Only include the requested tickers
+      const matched: Record<string, { feedId: number }> = {};
+      for (const t of tickers) {
+        if (atTickers[t]) matched[t] = { feedId: atTickers[t].feedId };
       }
+      if (Object.keys(matched).length > 0) supportedTickers[at] = matched;
     } else {
       supportedTickers[at] = Object.fromEntries(
-        Object.entries(tickers).map(([t, info]) => [t, { feedId: info.feedId }])
+        Object.entries(atTickers).map(([t, info]) => [t, { feedId: info.feedId }])
       );
     }
   }
