@@ -34,6 +34,7 @@ export function purchaseHandler(assetType: string, channelSlug: string, duration
         error: {
           code: "INVALID_TICKER",
           message: `Ticker '${ticker}' is not a valid ${assetType} ticker. Available: ${available.slice(0, 10).join(", ")}${available.length > 10 ? ` ... (${available.length} total)` : ""}`,
+          hint: "Look up valid symbols and feed IDs at https://history.pyth-lazer.dourolabs.app/history/v1/symbols",
         },
       });
       return;

@@ -72,6 +72,7 @@ pricingRouter.get("/", (req, res) => {
         error: {
           code: "INVALID_TICKER",
           message: `Ticker '${ticker}' not found${assetType ? ` in asset type '${assetType}'` : ""}`,
+          hint: "Look up valid symbols and feed IDs at https://history.pyth-lazer.dourolabs.app/history/v1/symbols",
         },
       });
       return;
