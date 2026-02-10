@@ -1,0 +1,12 @@
+node_modules
+dist
+logs
+.env*
+.git
+.claude
+.github
+examples
+prompts*
+*.md
+tsconfig.json
+vitest.config.*
