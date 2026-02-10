@@ -1,4 +1,4 @@
-import http from "node:http";
+import * as http from "node:http";
 import { createApp } from "./server.js";
 import { config } from "./config.js";
 import { createLogger } from "./logger.js";
